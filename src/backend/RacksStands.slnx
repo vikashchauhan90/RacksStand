@@ -1,0 +1,19 @@
+<solution>
+  <Folder Name="/Hosts/">
+    <Project Path="hosts/RacksStands.ApiHost/RacksStands.ApiHost.csproj" />
+  </Folder>
+  <Folder Name="/Modules/">
+    <Project Path="modules/RacksStands.Module.UserManagement/RacksStands.Module.UserManagement.csproj" />
+  </Folder>
+  <Folder Name="/Shared/">
+    <Project Path="shared/RacksStands.Framework.Auth/RacksStands.Framework.Auth.csproj" />
+    <Project Path="shared/RacksStands.Framework.Base/RacksStands.Framework.Base.csproj" />
+    <Project Path="shared/RacksStands.Framework.Caching/RacksStands.Framework.Caching.csproj" />
+    <Project Path="shared/RacksStands.Framework.Cqrs/RacksStands.Framework.Cqrs.csproj" />
+    <Project Path="shared/RacksStands.Framework.Modules.Bootstrap/RacksStands.Framework.Modules.Bootstrap.csproj" />
+    <Project Path="shared/RacksStands.Framework.Monitoring/RacksStands.Framework.Monitoring.csproj" />
+    <Project Path="shared/RacksStands.Framework.Persistence/RacksStands.Framework.Persistence.csproj" />
+    <Project Path="shared/RacksStands.Framework.Resiliency/RacksStands.Framework.Resiliency.csproj" />
+    <Project Path="shared/RacksStands.Framework.Results/RacksStands.Framework.Results.csproj" />
+  </Folder>
+</solution>
