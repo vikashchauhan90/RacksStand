@@ -1,4 +1,4 @@
-namespace RacksStands.Framework.Results;
+namespace RacksStands.Framework.Hal;
 
 public record ApiResponse
 {
