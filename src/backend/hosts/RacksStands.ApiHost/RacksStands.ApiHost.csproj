@@ -9,12 +9,13 @@
 		<PackageReference Include="FluentValidation.AspNetCore" />
 		<PackageReference Include="FluentValidation" />
 		<PackageReference Include="AspNetCore.HealthChecks.SqlServer" />
-		<PackageReference Include="AspNetCore.HealthChecks.NpgSql"  />
-		<PackageReference Include="AspNetCore.HealthChecks.Redis"  />
+		<PackageReference Include="AspNetCore.HealthChecks.NpgSql" />
+		<PackageReference Include="AspNetCore.HealthChecks.Redis" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\shared\RacksStands.Framework.Cqrs\RacksStands.Framework.Cqrs.csproj" />
+		<ProjectReference Include="..\..\shared\RacksStands.Framework.Hal\RacksStands.Framework.Hal.csproj" />
 		<ProjectReference Include="..\..\shared\RacksStands.Framework.Monitoring\RacksStands.Framework.Monitoring.csproj" />
 		<ProjectReference Include="..\..\shared\RacksStands.Framework.Results\RacksStands.Framework.Results.csproj" />
 		<ProjectReference Include="..\..\shared\RacksStands.Framework.Auth\RacksStands.Framework.Auth.csproj" />

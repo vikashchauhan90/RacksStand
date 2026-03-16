@@ -43,4 +43,21 @@ public static class ModuleServiceCollectionExtensions
 
         return services.AddModules(configuration, assemblies);
     }
+
+    public static IServiceCollection AddModules(
+        this IServiceCollection services,
+        IConfiguration configuration,
+        params IModule[] modules)
+    {
+        ArgumentNullException.ThrowIfNull(services, nameof(services));
+        ArgumentNullException.ThrowIfNull(configuration, nameof(configuration));
+        ArgumentNullException.ThrowIfNull(modules, nameof(modules));
+
+        foreach (var module in modules)
+        {
+            module.ConfigureServices(services, configuration);
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IModule>(module));
+        }
+        return services;
+    }
 }

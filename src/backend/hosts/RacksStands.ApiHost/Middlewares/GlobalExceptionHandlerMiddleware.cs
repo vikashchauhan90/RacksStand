@@ -1,6 +1,6 @@
 using RacksStands.Framework.Base.Exceptions;
 using RacksStands.Framework.Base.Serializers;
-using RacksStands.Framework.Results;
+using RacksStands.Framework.Hal;
 using System.Diagnostics;
 
 namespace RacksStands.ApiHost.Middlewares;

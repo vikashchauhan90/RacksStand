@@ -1,3 +1,4 @@
+using RacksStands.Framework.Results.Adapters;
 using System;
 
 namespace RacksStands.Framework.Results;
@@ -298,6 +299,10 @@ public readonly struct Result<T> : IEquatable<Result<T>>
         return !(left == right);
     }
 
+    /// <summary>
+    /// Converts this Result into an IResult adapter.
+    /// </summary>
+    public IResult<T> ToIResult() => new ResultAdapter<T>(this);
     private bool IsSuccess()
     {
         return Status == ResultState.Success || Status == ResultState.NoContent || Status == ResultState.Created;

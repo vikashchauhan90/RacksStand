@@ -1,3 +1,4 @@
+using RacksStands.Framework.Results.Adapters;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -352,6 +353,11 @@ public class Outcome<T> : IEquatable<Outcome<T>>
     {
         return !(left == right);
     }
+
+    /// <summary>
+    /// Converts this Result into an IResult adapter.
+    /// </summary>
+    public IResult<T> ToIResult() => new OutcomeAdapter<T>(this);
     private bool IsSuccess()
     {
         return Status == ResultState.Success || Status == ResultState.Created;

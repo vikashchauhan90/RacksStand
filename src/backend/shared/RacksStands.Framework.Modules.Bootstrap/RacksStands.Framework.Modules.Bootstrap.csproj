@@ -2,4 +2,9 @@
 	<ItemGroup>
 		<FrameworkReference Include="Microsoft.AspNetCore.App" />
 	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\RacksStands.Framework.Base\RacksStands.Framework.Base.csproj" />
+	  <ProjectReference Include="..\RacksStands.Framework.Hal\RacksStands.Framework.Hal.csproj" />
+	  <ProjectReference Include="..\RacksStands.Framework.Results\RacksStands.Framework.Results.csproj" />
+	</ItemGroup>
 </Project>

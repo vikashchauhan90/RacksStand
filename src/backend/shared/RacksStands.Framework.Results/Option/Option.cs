@@ -281,6 +281,6 @@ public static class Option
     /// <summary>
     /// Converts an Option<T> into an IResult adapter.
     /// </summary>
-    public static IResult ToIResult<T>(Option<T> option) => new OptionAdapter<T>(option);
+    public static IResult<T> ToIResult<T>(Option<T> option) => new OptionAdapter<T>(option);
 
 }
