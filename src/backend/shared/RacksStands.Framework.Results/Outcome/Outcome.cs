@@ -1,3 +1,4 @@
+using RacksStands.Framework.Results.Adapters;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -308,6 +309,11 @@ public sealed class Outcome : IEquatable<Outcome>
     /// <param name="right">The second <see cref="Outcome"/> to compare.</param>
     /// <returns><c>true</c> if the two <see cref="Outcome"/> instances are not equal; otherwise, <c>false</c>.</returns>
     public static bool operator !=(Outcome left, Outcome right) => !left.Equals(right);
+
+    /// <summary>
+    /// Converts this Outcome into an IResult adapter.
+    /// </summary>
+    public IResult ToIResult() => new OutcomeAdapter(this);
 
     private bool IsSuccess()
     {

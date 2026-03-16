@@ -20,4 +20,16 @@ public record Error(ErrorType Type, string Description)
 
     public static Error Unexpected(string description = "An unexpected error occurred.") =>
         new(ErrorType.Unexpected, description);
+    public static Error BadRequest(string description = "Bad request.") =>
+      new(ErrorType.BadRequest, description);
+
+    public static Error UnprocessableEntity(string description = "Unprocessable entity.") =>
+        new(ErrorType.UnprocessableEntity, description);
+
+    public static Error NotAcceptable(string description = "Not acceptable.") =>
+        new(ErrorType.NotAcceptable, description);
+
+    public static Error InternalServerError(string description = "Internal server error.") =>
+        new(ErrorType.InternalServerError, description);
+
 }

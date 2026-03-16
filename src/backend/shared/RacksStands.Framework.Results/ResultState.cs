@@ -69,5 +69,25 @@ public enum ResultState : byte
     /// <summary>
     /// Represents an unexpected condition that may occur during operation.
     /// </summary>
-    Unexpected = 13
+    Unexpected = 13,
+
+    /// <summary>
+    /// The request was malformed or invalid.
+    /// </summary>
+    BadRequest = 14,
+
+    /// <summary>
+    /// The request could not be processed due to semantic errors.
+    /// </summary>
+    UnprocessableEntity = 15,
+
+    /// <summary>
+    /// The requested content type or representation is not acceptable.
+    /// </summary>
+    NotAcceptable = 16,
+
+    /// <summary>
+    /// A generic internal server error occurred.
+    /// </summary>
+    InternalServerError = 17
 }

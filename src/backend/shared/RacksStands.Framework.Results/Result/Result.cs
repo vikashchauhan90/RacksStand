@@ -1,3 +1,4 @@
+using RacksStands.Framework.Results.Adapters;
 using System;
 using System.Collections.Generic;
 
@@ -184,6 +185,11 @@ public readonly struct Result : IEquatable<Result>
     /// <param name="right">The second <see cref="Result"/> to compare.</param>
     /// <returns><c>true</c> if the two <see cref="Result"/> instances are not equal; otherwise, <c>false</c>.</returns>
     public static bool operator !=(Result left, Result right) => !left.Equals(right);
+
+    /// <summary>
+    /// Converts this Result into an IResult adapter.
+    /// </summary>
+    public IResult ToIResult() => new ResultAdapter(this);
 
     private bool IsSuccess()
     {

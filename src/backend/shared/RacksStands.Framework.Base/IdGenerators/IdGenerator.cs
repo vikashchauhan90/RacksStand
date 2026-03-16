@@ -1,5 +1,5 @@
 using RacksStands.Framework.Base.Encoders;
-using System;
+using System.Security.Cryptography;
 
 namespace RacksStands.Framework.Base.IdGenerators;
 
@@ -65,5 +65,21 @@ public static class IdGenerator
     public static string NewCompactGuid()
     {
         return Base64UrlEncoderHelper.Encode(Guid.NewGuid().ToByteArray());
+    }
+
+    // ==============================
+    // Random String Generator
+    // ==============================
+
+    public static string NewRandomString(int size)
+    {
+        if (size <= 0)
+            throw new ArgumentOutOfRangeException(nameof(size), "Size must be positive.");
+
+        var bytes = new byte[size];
+        RandomNumberGenerator.Fill(bytes);
+
+        // Encode to Base64Url for safe string usage
+        return Base64UrlEncoderHelper.Encode(bytes);
     }
 }

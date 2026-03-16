@@ -1,5 +1,4 @@
-using System;
-using System.Collections.Generic;
+using RacksStands.Framework.Results.Adapters;
 
 namespace RacksStands.Framework.Results;
 
@@ -278,4 +277,10 @@ public static class Option
     /// <exception cref="OptionNoneException">Thrown when the option has no value.</exception>
     /// <exception cref="ArgumentNullException">Thrown when the provided option is <c>null</c>.</exception>
     public static T? Unwrap<T>(Option<T> option) => option.Unwrap();
+
+    /// <summary>
+    /// Converts an Option<T> into an IResult adapter.
+    /// </summary>
+    public static IResult ToIResult<T>(Option<T> option) => new OptionAdapter<T>(option);
+
 }
