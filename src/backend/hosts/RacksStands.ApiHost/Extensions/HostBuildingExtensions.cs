@@ -1,88 +1,96 @@
+using Asp.Versioning;
+using RacksStands.Framework.Auth;
+using RacksStands.Framework.Auth.Authorization;
+using RacksStands.Framework.Cqrs;
+using RacksStands.Framework.Modules.Bootstrap.Extensions;
+using RacksStands.Framework.Monitoring.Extensions;
+
 namespace RacksStands.ApiHost.Extensions;
 
 public static class HostBuildingExtensions
 {
     public static WebApplication AddServices(this WebApplicationBuilder builder)
     {
-        //builder.Services.AddOpenApi();
-        //builder.Services
-        //    .AddHealthChecks();
+        // Core framework
+        builder.Services.AddOptions();
+        builder.Services.AddHttpContextAccessor();
+        builder.Services.AddMemoryCache();
+        // JSON stays available because System.Text.Json is always included by default
+        builder.Services.AddControllers()
+            .AddXmlSerializerFormatters(); // adds XML
 
-        //builder.Services.AddCors(options =>
-        //{
-        //    options.AddDefaultPolicy(policy =>
-        //    {
-        //        policy.AllowAnyOrigin()
-        //              .AllowAnyHeader()
-        //              .AllowAnyMethod();
-        //    });
-        //});
+        builder.Services.AddCors(options =>
+        {
+            options.AddDefaultPolicy(policy =>
+            {
+                policy.AllowAnyOrigin()
+                      .AllowAnyHeader()
+                      .AllowAnyMethod();
+            });
+        });
 
-        //builder.Services.AddApiVersioning(options =>
-        //{
-        //    options.DefaultApiVersion = new ApiVersion(1, 0);
-        //    options.AssumeDefaultVersionWhenUnspecified = true;
-        //    options.ReportApiVersions = true;
-        //    options.ApiVersionReader = new UrlSegmentApiVersionReader();
-        //}).AddApiExplorer(options =>
-        //{
-        //    options.GroupNameFormat = "'v'VVV";
-        //    options.SubstituteApiVersionInUrl = true;
-        //});
+        // Add monitoring
+        builder.AddRacksStandsMonitoring("RacksStands.ApiHost", "1.0.0");
 
-        //builder.Services
-        //    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-        //    .AddJwtBearer(options =>
-        //    {
-        //        options.TokenValidationParameters = new TokenValidationParameters
-        //        {
-        //            ValidateIssuer = true,
-        //            ValidateAudience = true,
-        //            ValidateLifetime = true,
-        //            ValidateIssuerSigningKey = true,
-        //            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        //            ValidAudience = builder.Configuration["Jwt:Audience"],
-        //            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
-        //        };
-        //    });
+        // Add shared frameworks
+        builder.Services.AddCqrs();
 
-        //builder.Services.AddAuthorization();
-        //builder.Services.AddCarter();
-        //builder.AddApplicationDbContext();
-        //builder.AddLoggerServices();
-        //builder.Services.AddValidatorsFromAssembly(typeof(HostBuildingExtensions).Assembly);
-        //builder.Services.AddSingleton<IJwtService, JwtService>();
+
+        // Add auth
+        builder.Services.AddJwtAuthentication("your-issuer", "your-audience", "your-secret-key");
+        builder.Services.AddDummyAuthorization();
+
+        // Load modules dynamically
+        builder.Services.AddModules(
+            builder.Configuration,
+            typeof(RacksStands.Module.UserManagement.UserManagementModule)
+            );
+
+        builder.Services.AddOpenApi();
+        builder.Services.AddApiVersioning(options =>
+        {
+            options.ReportApiVersions = true;
+            options.AssumeDefaultVersionWhenUnspecified = true;
+            options.DefaultApiVersion = new ApiVersion(1, 0);
+            options.ApiVersionReader = new UrlSegmentApiVersionReader();
+        }).AddApiExplorer(options =>
+        {
+            options.GroupNameFormat = "'v'VVV";
+            options.SubstituteApiVersionInUrl = true;
+        });
+
+        builder.Services.AddHealthChecks();
 
         return builder.Build();
     }
 
     public static WebApplication ConfigurePipeline(this WebApplication app)
     {
-        //app.MapOpenApi();
-        //if (app.Environment.IsDevelopment())
-        //{
-        //    app.MapScalarApiReference(opt =>
-        //    {
-        //        opt.Title = "Racks Stand";
-        //        opt.Theme = ScalarTheme.Mars;
-        //        opt.DefaultHttpClient = new(ScalarTarget.Http, ScalarClient.Http11);
-        //        opt.WithHttpBearerAuthentication(bearer =>
-        //        {
-        //            bearer.Token = "your-bearer-token";
-        //        });
 
-        //    });
-        //}
-        //app.UseMiddleware<ErrorHandlerMiddleware>();
-        //app.UseCors();
-        //app.UseHttpsRedirection();
-        //app.UseAuthentication();
-        //app.UseAuthorization();
-        //app.NewVersionedApi()
-        //    .MapGroup("api/v{apiVersion:apiVersion}/")
-        //    .HasApiVersion(1)
-        //    .MapCarter();
-        //app.UseHealthChecks("/healthz");
+        if (app.Environment.IsDevelopment())
+        {
+            app.MapOpenApi();
+        }
+
+        app.UseHttpsRedirection();
+        app.UseRouting();
+        app.UseRequestScope();
+        // Global exception handler should be first
+        app.UseGlobalExceptionHandler();
+        app.UseCorrelationId();
+        app.UseCors();
+        // Security headers
+        app.UseSecurityHeaders();
+        // Idempotency middleware
+        app.UseIdempotency();
+        // Authentication & Authorization
+        app.UseAuthentication();
+        app.UseAuthorization();
+        app.UseAuthenticationScope();
+        // Configure modules
+        app.UseModules();
+
+        app.MapHealthChecks("/health");
 
         return app;
     }
