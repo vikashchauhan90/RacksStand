@@ -1,7 +1,7 @@
 using FluentValidation;
-using RacksStands.Module.UserManagement.Requests;
+using RacksStands.Module.UserManagement.Operations.Requests;
 
-namespace RacksStands.Module.UserManagement.Validators;
+namespace RacksStands.Module.UserManagement.Operations.Validators;
 
 public class CreateUserRequestValidator : AbstractValidator<CreateUserRequest>
 {

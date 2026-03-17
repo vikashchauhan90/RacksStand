@@ -1,4 +1,4 @@
-namespace RacksStands.Module.UserManagement.Requests;
+namespace RacksStands.Module.UserManagement.Operations.Requests;
 
 public class CreateUserRequest
 {

@@ -1,5 +1,3 @@
-
-
 namespace RacksStands.Module.UserManagement.Entities;
 
 internal class TenantSubscription : IEntity<string>, IEntityAudit, IEntityConcurrency
