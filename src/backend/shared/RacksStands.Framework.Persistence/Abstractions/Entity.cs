@@ -14,8 +14,8 @@ public abstract class Entity<TKey> : Entity, IEntity<TKey>
 public abstract class AuditableEntity : Entity, IEntityAudit
 {
     public DateTimeOffset? DeletedAt { get; set; } = DateTimeOffset.UtcNow;
-    DateTimeOffset IEntityAudit.CreatedAt { get; set; } = DateTimeOffset.UtcNow;
-    DateTimeOffset? IEntityAudit.UpdatedAt { get; set; } = DateTimeOffset.UtcNow;
+    public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
+    public DateTimeOffset? UpdatedAt { get; set; } = DateTimeOffset.UtcNow;
 }
 
 
