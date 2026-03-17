@@ -1,3 +1,9 @@
 global using RacksStands.Framework.Persistence.Abstractions;
 global using RacksStands.Module.UserManagement.Entities;
 global using RacksStands.Module.UserManagement.Entities.Enums;
+global using RacksStands.Framework.Persistence.Interceptors;
+global using RacksStands.Framework.Persistence.Options;
+global using RacksStands.Module.UserManagement.Constants;
+global using RacksStands.Module.UserManagement.DbContexts;
+global using RacksStands.Module.UserManagement.Endpoints;
+global using RacksStands.Framework.Modules.Bootstrap.Abstractions;
