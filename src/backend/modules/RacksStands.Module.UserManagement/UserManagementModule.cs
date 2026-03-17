@@ -70,8 +70,10 @@ public class UserManagementModule : IModule
 
     public void MapEndpoints(IEndpointRouteBuilder routes)
     {
-        var dbContext = routes.ServiceProvider.GetRequiredService<UserManagementDbContext>();
+        using var scope = routes.ServiceProvider.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<UserManagementDbContext>();
         dbContext.Database.Migrate(); // Apply migrations
+
         routes.MapUserEndpoints();
     }
 }
