@@ -26,10 +26,29 @@ public class GlobalExceptionHandlerMiddleware(RequestDelegate next, ILogger<Glob
         {
             return Task.CompletedTask;
         }
+
+
+        var acceptHeader = context.Request.Headers.Accept.ToString();
+        var contentType = string.IsNullOrWhiteSpace(acceptHeader)
+            ? ContentType.Json
+            : ContentTypes.Resolve(acceptHeader);
+
         var (statusCode, apiResponse) = BuildApiResponse(context, exception);
         context.Response.StatusCode = statusCode;
-        context.Response.ContentType = "application/json";
-        return context.Response.WriteAsJsonAsync(apiResponse, JsonSerializerHelper.Options);
+        context.Response.ContentType = contentType switch
+        {
+            ContentType.Json => ContentTypes.ApplicationJson,
+            ContentType.Xml => ContentTypes.ApplicationXml,
+            _ => ContentTypes.TextPlain
+        };
+
+        return contentType switch
+        {
+            ContentType.Json => context.Response.WriteAsJsonAsync(apiResponse, JsonSerializerHelper.Options),
+            ContentType.Xml => context.Response.WriteAsync(XmlSerializerHelper.SerializeString(apiResponse)),
+            _ => context.Response.WriteAsync(TextSerializerHelper.SerializeString(apiResponse))
+        };
+
     }
 
     private static (int statusCode, ApiResponse) BuildApiResponse(

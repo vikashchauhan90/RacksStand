@@ -14,6 +14,7 @@ namespace RacksStands.Framework.Base.Serializers;
 
         public const string TextPlain = "text/plain";
         public const string TextPlainUtf8 = "text/plain; charset=utf-8";
+        public const string Anything = "*/*";
 
         // Supported content types collection
         public static readonly IReadOnlyCollection<string> Supported = new[]
@@ -42,6 +43,7 @@ namespace RacksStands.Framework.Base.Serializers;
                 ApplicationXml => ContentType.Xml,
                 TextXml => ContentType.Xml,
                 TextPlain => ContentType.Text,
+                Anything => ContentType.Json,
                 _ => throw new NotSupportedException($"Unsupported content type: {rawHeaderValue}")
             };
         }
