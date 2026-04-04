@@ -11,7 +11,7 @@ public static class TracingHelper
         return ActivitySource.StartActivity(name, kind);
     }
 
-    public static Activity? StartActivity(string name, ActivityKind kind = ActivityKind.Internal, IEnumerable<KeyValuePair<string, object>> tags = null)
+    public static Activity? StartActivity(string name, ActivityKind kind = ActivityKind.Internal, IEnumerable<KeyValuePair<string, object>>? tags = null)
     {
         var activity = TracingHelper.StartActivity(name, kind);
         if (tags != null && activity != null)

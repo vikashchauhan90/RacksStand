@@ -4,5 +4,5 @@ namespace RacksStands.Framework.Modules.Bootstrap.Abstractions;
 
 public interface IEndpoint
 {
-    void Map(RouteGroupBuilder group);
+    void Map(IEndpointRouteBuilder group);
 }

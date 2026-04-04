@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using RacksStands.Module.UserManagement.Entities;
+using RacksStands.Module.UserManagement.DbContexts.Entities;
 
-namespace RacksStands.Module.UserManagement.Repositories;
+namespace RacksStands.Module.UserManagement.DbContexts.Repositories;
 
-public class UserRepository : IUserRepository
+internal class UserRepository : IUserRepository
 {
     private readonly UserManagementDbContext _context;
 

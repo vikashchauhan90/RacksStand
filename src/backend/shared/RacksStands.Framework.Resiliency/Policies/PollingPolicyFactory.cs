@@ -25,7 +25,7 @@ public static class PollingPolicyFactory
                         return PredicateResult.False();
                     }
 
-                    return ValueTask.FromResult(args.Outcome.Result.StatusCode == System.Net.HttpStatusCode.Accepted);
+                    return ValueTask.FromResult(args.Outcome.Result?.StatusCode == System.Net.HttpStatusCode.Accepted);
                 }
             })
             .Build();

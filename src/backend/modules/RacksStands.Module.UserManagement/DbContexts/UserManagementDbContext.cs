@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using RacksStands.Module.UserManagement.DbContexts.Entities;
 
 namespace RacksStands.Module.UserManagement.DbContexts;
 

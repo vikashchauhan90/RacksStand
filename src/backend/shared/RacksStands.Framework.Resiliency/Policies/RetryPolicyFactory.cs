@@ -29,7 +29,7 @@ public static class RetryPolicyFactory
             UseJitter = true,
             DelayGenerator = static args =>
             {
-                if (args.Outcome.Result.Headers.TryGetValues("Retry-After", out var values) is true)
+                if (args.Outcome.Result?.Headers.TryGetValues("Retry-After", out var values) is true)
                 {
                     var retryAfterValue = values.FirstOrDefault();
                     if (int.TryParse(retryAfterValue, out var seconds))

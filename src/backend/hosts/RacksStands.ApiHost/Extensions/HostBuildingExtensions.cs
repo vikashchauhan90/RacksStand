@@ -1,8 +1,8 @@
 using Asp.Versioning;
+using MediatorForge;
 using RacksStands.Framework.Auth;
 using RacksStands.Framework.Auth.Authorization;
-using RacksStands.Framework.Cqrs;
-using RacksStands.Framework.Modules.Bootstrap.Extensions;
+using RacksStands.Framework.Modules.Bootstrap;
 using RacksStands.Framework.Monitoring.Extensions;
 
 namespace RacksStands.ApiHost.Extensions;
@@ -43,7 +43,7 @@ public static class HostBuildingExtensions
         // Load modules dynamically
         builder.Services.AddModules(
             builder.Configuration,
-            typeof(RacksStands.Module.UserManagement.UserManagementModule)
+            [typeof(RacksStands.Module.UserManagement.UserManagementModule).Assembly]
             );
 
         builder.Services.AddOpenApi();

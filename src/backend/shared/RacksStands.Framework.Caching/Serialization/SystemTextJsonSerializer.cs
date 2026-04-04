@@ -18,7 +18,7 @@ public sealed class SystemTextJsonSerializer : ISerializer
         }
     };
 
-    public T Deserialize<T>(ReadOnlySpan<byte> data) =>
+    public T? Deserialize<T>(ReadOnlySpan<byte> data) =>
         JsonSerializer.Deserialize<T>(data, _options);
 
     public byte[] Serialize<T>(T obj) =>

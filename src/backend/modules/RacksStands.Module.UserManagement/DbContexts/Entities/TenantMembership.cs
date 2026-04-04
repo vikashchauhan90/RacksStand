@@ -1,5 +1,4 @@
-
-namespace RacksStands.Module.UserManagement.Entities;
+namespace RacksStands.Module.UserManagement.DbContexts.Entities;
 
 internal class TenantMembership : IEntity<string>, IEntityAudit, IEntityConcurrency
 {

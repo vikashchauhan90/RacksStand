@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Builder;
-using RacksStands.Module.UserManagement.Entities;
-using RacksStands.Module.UserManagement.Repositories;
 using RacksStands.Module.UserManagement.Operations.Requests;
 
 namespace RacksStands.Module.UserManagement.Endpoints;
@@ -27,7 +25,7 @@ public static class UserEndpoints
         {
             var user = new User
             {
-                Id = Guid.NewGuid(),
+                Id = Guid.NewGuid().ToString(),
                 UserName = request.UserName,
                 Email = request.Email,
                 PasswordHash = request.Password,

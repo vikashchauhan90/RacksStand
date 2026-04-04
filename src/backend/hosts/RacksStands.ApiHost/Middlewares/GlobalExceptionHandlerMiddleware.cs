@@ -1,6 +1,6 @@
+using Hal.Core;
 using RacksStands.Framework.Base.Exceptions;
 using RacksStands.Framework.Base.Serializers;
-using RacksStands.Framework.Hal;
 using System.Diagnostics;
 
 namespace RacksStands.ApiHost.Middlewares;
@@ -16,6 +16,7 @@ public class GlobalExceptionHandlerMiddleware(RequestDelegate next, ILogger<Glob
         }
         catch (Exception ex)
         {
+            logger.LogError(ex, "An Error occured.");
             await HandleExceptionAsync(context, ex);
         }
     }

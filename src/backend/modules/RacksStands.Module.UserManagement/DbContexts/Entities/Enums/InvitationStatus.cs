@@ -1,5 +1,4 @@
-
-namespace RacksStands.Module.UserManagement.Entities.Enums;
+namespace RacksStands.Module.UserManagement.DbContexts.Entities.Enums;
 
 internal enum InvitationStatus
 {

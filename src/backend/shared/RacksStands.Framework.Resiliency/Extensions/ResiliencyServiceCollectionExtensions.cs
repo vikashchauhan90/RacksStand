@@ -1,7 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RacksStands.Framework.Resiliency.Options;
-using System;
 
 namespace RacksStands.Framework.Resiliency.Extensions;
 
@@ -10,9 +9,9 @@ public static class ResiliencyServiceCollectionExtensions
     public static IServiceCollection AddResiliencyPolicies(
         this IServiceCollection services,
         IConfiguration configuration,
-        Action<CircuitBreakerPolicyOptions> configCircuitBreakerPolicyOptions = null,
-        Action<RetryPolicyOptions> configRetryPolicyOptions = null,
-        Action<PollingPolicyOptions> configPollingPolicyOptions = null)
+        Action<CircuitBreakerPolicyOptions> configCircuitBreakerPolicyOptions,
+        Action<RetryPolicyOptions> configRetryPolicyOptions,
+        Action<PollingPolicyOptions> configPollingPolicyOptions)
     {
         services.AddOptions<CircuitBreakerPolicyOptions>()
             .Bind(configuration.GetSection(CircuitBreakerPolicyOptions.SectionName))

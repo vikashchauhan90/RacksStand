@@ -1,4 +1,6 @@
-namespace RacksStands.Module.UserManagement.Entities;
+using RacksStands.Module.UserManagement.DbContexts.Entities.Enums;
+
+namespace RacksStands.Module.UserManagement.DbContexts.Entities;
 
 internal class TenantSubscription : IEntity<string>, IEntityAudit, IEntityConcurrency
 {

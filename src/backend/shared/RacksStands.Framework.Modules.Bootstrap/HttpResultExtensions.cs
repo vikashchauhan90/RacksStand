@@ -1,32 +1,31 @@
 using Microsoft.AspNetCore.Http;
 using RacksStands.Framework.Base.Serializers;
-using RacksStandsResult = RacksStands.Framework.Results;
 using HttpResults = Microsoft.AspNetCore.Http.Results;
-using RacksStands.Framework.Hal;
+using Hal.Core;
 
-namespace RacksStands.Framework.Modules.Bootstrap.Extensions;
+namespace RacksStands.Framework.Modules.Bootstrap;
 
 public static class HttpResultExtensions
 {
-    public static IResult ToHttpResult(this RacksStandsResult.IResult domainResult, HttpContext httpContext)
+    public static IResult ToHttpResult(this ResultifyCore.IResult domainResult, HttpContext httpContext)
     {
         var acceptHeader = httpContext.Request.Headers.Accept.ToString();
         var contentType = string.IsNullOrWhiteSpace(acceptHeader)
             ? ContentType.Json
             : ContentTypes.Resolve(acceptHeader);
 
-        if (domainResult.Status == RacksStandsResult.ResultState.NoContent)
+        if (domainResult.Status == ResultifyCore.ResultState.NoContent)
         {
             return TypedResults.NoContent();
         }
 
 
-        if (domainResult.Status == RacksStandsResult.ResultState.Success)
+        if (domainResult.Status == ResultifyCore.ResultState.Success)
         {
             return TypedResults.Ok();
         }
 
-        if (domainResult.Status == RacksStandsResult.ResultState.Created)
+        if (domainResult.Status == ResultifyCore.ResultState.Created)
         {
             return TypedResults.Created();
         }
@@ -47,7 +46,7 @@ public static class HttpResultExtensions
             MapStatusToHttpCode(domainResult.Status)
         );
     }
-    public static IResult ToHttpResult<T>(this RacksStandsResult.IResult<T> domainResult, HttpContext httpContext)
+    public static IResult ToHttpResult<T>(this ResultifyCore.IResult<T> domainResult, HttpContext httpContext)
     {
         var acceptHeader = httpContext.Request.Headers.Accept.ToString();
         var contentType = string.IsNullOrWhiteSpace(acceptHeader)
@@ -55,11 +54,11 @@ public static class HttpResultExtensions
             : ContentTypes.Resolve(acceptHeader);
 
         // Success branch
-        if (domainResult.Status == RacksStandsResult.ResultState.Success ||
-            domainResult.Status == RacksStandsResult.ResultState.Created ||
-            domainResult.Status == RacksStandsResult.ResultState.NoContent)
+        if (domainResult.Status == ResultifyCore.ResultState.Success ||
+            domainResult.Status == ResultifyCore.ResultState.Created ||
+            domainResult.Status == ResultifyCore.ResultState.NoContent)
         {
-            if (domainResult.Status == RacksStandsResult.ResultState.NoContent)
+            if (domainResult.Status == ResultifyCore.ResultState.NoContent)
             {
                 return TypedResults.NoContent();
             }
@@ -99,25 +98,25 @@ public static class HttpResultExtensions
             MapStatusToHttpCode(domainResult.Status)
         );
     }
-    public static IResult ToApiResult(this RacksStandsResult.IResult domainResult, HttpContext httpContext, string? errorMessage = null)
+    public static IResult ToApiResult(this ResultifyCore.IResult domainResult, HttpContext httpContext, string? errorMessage = null)
     {
         var acceptHeader = httpContext.Request.Headers.Accept.ToString();
         var contentType = string.IsNullOrWhiteSpace(acceptHeader)
             ? ContentType.Json
             : ContentTypes.Resolve(acceptHeader);
 
-        if (domainResult.Status == RacksStandsResult.ResultState.NoContent)
+        if (domainResult.Status == ResultifyCore.ResultState.NoContent)
         {
             return TypedResults.NoContent();
         }
 
 
-        if (domainResult.Status == RacksStandsResult.ResultState.Success)
+        if (domainResult.Status == ResultifyCore.ResultState.Success)
         {
             return TypedResults.Ok(new ApiResponse { Success = true });
         }
 
-        if (domainResult.Status == RacksStandsResult.ResultState.Created)
+        if (domainResult.Status == ResultifyCore.ResultState.Created)
         {
             return TypedResults.Created();
         }
@@ -125,7 +124,7 @@ public static class HttpResultExtensions
         var errorSerialized = ResponseSerializer.Serialize(new ApiResponse
         {
             Success = false,
-            Error = errorMessage,
+            Error = errorMessage ?? string.Empty,
             ErrorMeta = domainResult.Errors
 
         },
@@ -145,7 +144,7 @@ public static class HttpResultExtensions
             MapStatusToHttpCode(domainResult.Status)
         );
     }
-    public static IResult ToApiResult<T>(this RacksStandsResult.IResult<T> domainResult, HttpContext httpContext, string? errorMessage = null)
+    public static IResult ToApiResult<T>(this ResultifyCore.IResult<T> domainResult, HttpContext httpContext, string? errorMessage = null)
     {
         var acceptHeader = httpContext.Request.Headers.Accept.ToString();
         var contentType = string.IsNullOrWhiteSpace(acceptHeader)
@@ -153,11 +152,11 @@ public static class HttpResultExtensions
             : ContentTypes.Resolve(acceptHeader);
 
         // Success branch
-        if (domainResult.Status == RacksStandsResult.ResultState.Success ||
-            domainResult.Status == RacksStandsResult.ResultState.Created ||
-            domainResult.Status == RacksStandsResult.ResultState.NoContent)
+        if (domainResult.Status == ResultifyCore.ResultState.Success ||
+            domainResult.Status == ResultifyCore.ResultState.Created ||
+            domainResult.Status == ResultifyCore.ResultState.NoContent)
         {
-            if (domainResult.Status == RacksStandsResult.ResultState.NoContent)
+            if (domainResult.Status == ResultifyCore.ResultState.NoContent)
             {
                 return TypedResults.NoContent();
             }
@@ -187,7 +186,7 @@ public static class HttpResultExtensions
         {
             Success = true,
             Data = domainResult.Data,
-            Error = errorMessage,
+            Error = errorMessage ?? string.Empty,
             ErrorMeta = domainResult.Errors
         }, contentType);
 
@@ -205,18 +204,18 @@ public static class HttpResultExtensions
             MapStatusToHttpCode(domainResult.Status)
         );
     }
-    private static int MapStatusToHttpCode(RacksStandsResult.ResultState state) => state switch
+    private static int MapStatusToHttpCode(ResultifyCore.ResultState state) => state switch
     {
-        RacksStandsResult.ResultState.Success => StatusCodes.Status200OK,
-        RacksStandsResult.ResultState.Created => StatusCodes.Status201Created,
-        RacksStandsResult.ResultState.NoContent => StatusCodes.Status204NoContent,
-        RacksStandsResult.ResultState.NotFound => StatusCodes.Status404NotFound,
-        RacksStandsResult.ResultState.Validation => StatusCodes.Status422UnprocessableEntity,
-        RacksStandsResult.ResultState.Conflict => StatusCodes.Status409Conflict,
-        RacksStandsResult.ResultState.Forbidden => StatusCodes.Status403Forbidden,
-        RacksStandsResult.ResultState.Unauthorized => StatusCodes.Status401Unauthorized,
-        RacksStandsResult.ResultState.Unavailable => StatusCodes.Status503ServiceUnavailable,
-        RacksStandsResult.ResultState.Unexpected => StatusCodes.Status500InternalServerError,
+        ResultifyCore.ResultState.Success => StatusCodes.Status200OK,
+        ResultifyCore.ResultState.Created => StatusCodes.Status201Created,
+        ResultifyCore.ResultState.NoContent => StatusCodes.Status204NoContent,
+        ResultifyCore.ResultState.NotFound => StatusCodes.Status404NotFound,
+        ResultifyCore.ResultState.Validation => StatusCodes.Status422UnprocessableEntity,
+        ResultifyCore.ResultState.Conflict => StatusCodes.Status409Conflict,
+        ResultifyCore.ResultState.Forbidden => StatusCodes.Status403Forbidden,
+        ResultifyCore.ResultState.Unauthorized => StatusCodes.Status401Unauthorized,
+        ResultifyCore.ResultState.Unavailable => StatusCodes.Status503ServiceUnavailable,
+        ResultifyCore.ResultState.Unexpected => StatusCodes.Status500InternalServerError,
         _ => StatusCodes.Status500InternalServerError
     };
 }

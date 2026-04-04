@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using RacksStands.Module.UserManagement.DbContexts.Entities;
 
 namespace RacksStands.Module.UserManagement.DbContexts.Configurations;
 

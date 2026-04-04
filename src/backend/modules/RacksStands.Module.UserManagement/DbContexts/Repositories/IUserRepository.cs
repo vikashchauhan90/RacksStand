@@ -1,8 +1,8 @@
-using RacksStands.Module.UserManagement.Entities;
+using RacksStands.Module.UserManagement.DbContexts.Entities;
 
-namespace RacksStands.Module.UserManagement.Repositories;
+namespace RacksStands.Module.UserManagement.DbContexts.Repositories;
 
-public interface IUserRepository
+internal interface IUserRepository
 {
     Task<User?> GetByIdAsync(Guid id);
     Task<User?> GetByEmailAsync(string email);
