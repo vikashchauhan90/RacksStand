@@ -1,5 +1,5 @@
 [flyway]
-locations = ["filesystem:./db/schema", "filesystem:./db/repeatable"]
+locations = ["filesystem:./db/schema","filesystem:./db/undo", "filesystem:./db/repeatable"]
 validateMigrationNaming = true
 cleanDisabled = true
 

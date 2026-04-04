@@ -19,6 +19,9 @@ dotnet ef database update --project  RacksStand.Infrastructure/RacksStand.Infras
 ```cmd
 dotnet --% ef migrations script --idempotent --output ./migrations.sql --project ./src/backend/modules/RacksStands.Module.UserManagement/RacksStands.Module.UserManagement.csproj --startup-project ./src/backend/hosts/RacksStands.ApiHost/RacksStands.ApiHost.csproj
 ```
+```cmd
+flyway -configFiles=./db/flyway.conf info
+```
 
 ## API -
 ```
