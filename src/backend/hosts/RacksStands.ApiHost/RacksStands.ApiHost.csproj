@@ -11,6 +11,7 @@
 		<PackageReference Include="AspNetCore.HealthChecks.SqlServer" />
 		<PackageReference Include="AspNetCore.HealthChecks.NpgSql" />
 		<PackageReference Include="AspNetCore.HealthChecks.Redis" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" />
 	</ItemGroup>
 
 	<ItemGroup>

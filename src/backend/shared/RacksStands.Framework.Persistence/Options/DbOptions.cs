@@ -6,11 +6,11 @@ public sealed class DbOptions
 {
     [Required]
     [MinLength(10)]
-    public string ConnectionString { get; set; } = string.Empty;
+    public string ConnectionString { get; init; } = string.Empty;
 
     [Range(1, 10)]
-    public int MaxRetryCount { get; set; } = 5;
+    public int MaxRetryCount { get; init; } = 5;
 
     [Range(1, 60)]
-    public int MaxRetryDelaySeconds { get; set; } = 15;
+    public int MaxRetryDelaySeconds { get; init; } = 15;
 }

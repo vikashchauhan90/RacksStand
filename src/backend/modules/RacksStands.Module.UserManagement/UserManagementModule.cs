@@ -13,7 +13,7 @@ public class UserManagementModule : IModule
     {
         // Bind and validate options
         services.AddOptions<DbOptions>()
-            .Bind(configuration.GetSection(ConfigurationSections.UserManagementDb))
+            .Bind(configuration.GetSection(ConfigurationSections.ModuleName))
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
@@ -59,7 +59,7 @@ public class UserManagementModule : IModule
             options.AddInterceptors(
                 sp.GetRequiredService<AuditEntityInterceptor>(),
                 sp.GetRequiredService<SecurityEntityInterceptor>());
-        });
+        }, lifetime: ServiceLifetime.Scoped);
 
     }
 

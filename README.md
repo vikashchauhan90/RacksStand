@@ -17,13 +17,11 @@ dotnet ef database update --project  RacksStand.Infrastructure/RacksStand.Infras
 # Migration creation
 
 ```cmd
-cd src/RacksStand.Api
-dotnet ef migrations add InitialCreate --context ApplicationDbContext --output-dir Domain/Migrations
-dotnet ef database update
-
+dotnet --% ef migrations script --idempotent --output ./migrations.sql --project ./src/backend/modules/RacksStands.Module.UserManagement/RacksStands.Module.UserManagement.csproj --startup-project ./src/backend/hosts/RacksStands.ApiHost/RacksStands.ApiHost.csproj
 ```
 
 ## API -
 ```
 https://localhost:7097/openapi/v1.json
 ```
+ 

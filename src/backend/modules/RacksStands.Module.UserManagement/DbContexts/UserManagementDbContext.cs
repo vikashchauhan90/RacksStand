@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using RacksStands.Module.UserManagement.DbContexts.Entities;
 
 namespace RacksStands.Module.UserManagement.DbContexts;
 
@@ -22,8 +21,8 @@ internal class UserManagementDbContext(DbContextOptions<UserManagementDbContext>
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.HasDefaultSchema(ConfigurationSections.ModuleName);
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(UserManagementDbContext).Assembly);
-        UserManagementDbSeeder.Seed(modelBuilder);
         base.OnModelCreating(modelBuilder);
     }
 }

@@ -26,8 +26,4 @@
 	  <PackageReference Include="MediatorForge" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="DbContexts\Migrations\" />
-  </ItemGroup>
-
 </Project>
