@@ -7,9 +7,9 @@ using Microsoft.Extensions.Options;
 
 namespace RacksStands.Module.UserManagement;
 
-public class UserManagementModule : IModule
+public class UserManagementModule : ModuleBase
 {
-    public void ConfigureServices(IServiceCollection services, IConfiguration configuration)
+    public override void ConfigureServices(IServiceCollection services, IConfiguration configuration)
     {
         // Bind and validate options
         services.AddOptions<DbOptions>()
@@ -61,14 +61,5 @@ public class UserManagementModule : IModule
                 sp.GetRequiredService<SecurityEntityInterceptor>());
         }, lifetime: ServiceLifetime.Scoped);
 
-    }
-
-    public void MapEndpoints(IEndpointRouteBuilder routes)
-    {
-        using var scope = routes.ServiceProvider.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<UserManagementDbContext>();
-        dbContext.Database.Migrate(); // Apply migrations
-
-        routes.MapUserEndpoints();
     }
 }

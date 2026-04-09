@@ -37,7 +37,7 @@ public static class HostBuildingExtensions
 
 
         // Add auth
-        builder.Services.AddJwtAuthentication("your-issuer", "your-audience", "your-secret-key");
+        builder.Services.AddJwtAuthentication();
         builder.Services.AddDummyAuthorization();
 
         // Load modules dynamically
