@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\shared\RacksStands.Framework.Auth\RacksStands.Framework.Auth.csproj" />
     <ProjectReference Include="..\..\shared\RacksStands.Framework.Modules.Bootstrap\RacksStands.Framework.Modules.Bootstrap.csproj" />
     <ProjectReference Include="..\..\shared\RacksStands.Framework.Persistence\RacksStands.Framework.Persistence.csproj" />
   </ItemGroup>
@@ -24,6 +25,7 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
     <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" />
 	  <PackageReference Include="MediatorForge" />
+	  <PackageReference Include="ResultifyCore" />
   </ItemGroup>
 
 </Project>

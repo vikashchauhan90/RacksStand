@@ -5,5 +5,7 @@ global using RacksStands.Framework.Persistence.Interceptors;
 global using RacksStands.Framework.Persistence.Options;
 global using RacksStands.Module.UserManagement.Constants;
 global using RacksStands.Module.UserManagement.DbContexts.Repositories;
-global using RacksStands.Module.UserManagement.Endpoints;
+global using MediatorForge.Abstractions;
 global using RacksStands.Framework.Modules.Bootstrap.Abstractions;
+global using Microsoft.Extensions.Logging;
+global using RacksStands.Framework.Modules.Bootstrap;

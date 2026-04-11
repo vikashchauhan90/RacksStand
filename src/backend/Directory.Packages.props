@@ -81,7 +81,7 @@
     <!-- Result pattern -->
     <PackageVersion Include="ResultifyCore" Version="10.0.0" />
     <!-- CQRS pattern -->
-    <PackageVersion Include="MediatorForge" Version="10.0.0" />
+    <PackageVersion Include="MediatorForge" Version="10.0.1" />
      <!-- Hal pattern -->
     <PackageVersion Include="Hal.Core" Version="10.0.0" />
   </ItemGroup>

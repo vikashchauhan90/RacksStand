@@ -18,10 +18,10 @@ internal class JwksEndpoint : IEndpoint
             .AllowAnonymous();
 
     private static async Task<IResult> Handler(
-        [FromServices]ISigningKeyFactory signingKeyFactory,
+        [FromServices] IQueryDispatcher dispatcher,
         HttpContext context)
     {
-        var jwks = signingKeyFactory.GetJsonWebKeySet();
+        var jwks = await dispatcher.QueryAsync<JwksQuery, JwksDocument>(new JwksQuery(), context.RequestAborted);
         context.Response.Headers.CacheControl = "public, max-age=300";
         return Results.Json(
             jwks,
