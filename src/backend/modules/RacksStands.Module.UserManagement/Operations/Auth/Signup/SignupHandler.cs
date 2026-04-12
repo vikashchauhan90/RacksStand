@@ -1,34 +1,31 @@
-using Microsoft.EntityFrameworkCore;
 using RacksStands.Framework.Base.Hashers;
 using RacksStands.Framework.Base.IdGenerators;
-using RacksStands.Module.UserManagement.Operations.Auth.Signin;
-using ResultifyCore;
+using RacksStands.Module.UserManagement.DbContexts.Repositories;
 
 namespace RacksStands.Module.UserManagement.Operations.Auth.Signup;
 
 internal class SignupHandler(
-    UserManagementDbContext dbContext,
+    IUserRepository userRepository,
     ILogger<SignupHandler> logger
 ) : ICommandHandler<SignupCommand, Outcome<Unit>>
 {
     public async Task<Outcome<Unit>> HandleAsync(SignupCommand command, CancellationToken ct = default)
     {
-        logger.LogInformation("Fetching if user already exist.");
-        // Check if user already exists
-        var existingUser = await dbContext.Users
-            .FirstOrDefaultAsync(u => u.Email == command.Email || u.UserName == command.UserName, ct);
+        logger.LogInformation("Checking if user already exists with email {Email} or username {UserName}", command.Email, command.UserName);
 
-        if (existingUser != null)
+        // Check if user already exists
+        if (await userRepository.ExistsByEmailAsync(command.Email, ct))
         {
-            logger.LogWarning("User with this email or username already exists.");
-            return Outcome<Unit>.Conflict(new OutcomeError("Signup.AlreadyExists", "User with this email or username already exists."));
+            logger.LogWarning("User with email {Email} already exists", command.Email);
+            return Outcome<Unit>.Conflict(new OutcomeError("Signup.AlreadyExists", "User with this email already exists."));
         }
 
-        // Get default role
-        var defaultRole = await dbContext.Roles
-            .FirstOrDefaultAsync(r => r.Name == "User", ct);
+        if (await userRepository.ExistsByUserNameAsync(command.UserName, ct))
+        {
+            logger.LogWarning("User with username {UserName} already exists", command.UserName);
+            return Outcome<Unit>.Conflict(new OutcomeError("Signup.AlreadyExists", "User with this username already exists."));
+        }
 
-        // Create new user
         var user = new User
         {
             Id = IdGenerator.NewGuidString(),
@@ -36,20 +33,13 @@ internal class SignupHandler(
             UserName = command.UserName,
             Email = command.Email,
             PasswordHash = PasswordHasher.HashPassword(command.Password),
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTimeOffset.UtcNow
         };
 
-        await dbContext.Users.AddAsync(user, ct);
-        // Assign default role if exists
-        //if (defaultRole != null)
-        //{
-        //    var userRole = new Role { UserId = user.Id, RoleId = defaultRole.Id };
-        //    await dbContext.UserRoles.AddAsync(userRole, ct);
-        //}
-
-        await dbContext.SaveChangesAsync(ct);
+        await userRepository.AddAsync(user, ct);
 
         logger.LogInformation("User {UserName} created successfully with ID {UserId}", user.UserName, user.Id);
+        logger.LogInformation("User {UserId} needs to create a tenant to start using the system", user.Id);
 
         return Outcome<Unit>.Success(Unit.Value);
     }

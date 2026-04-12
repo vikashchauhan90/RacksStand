@@ -1,10 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
+namespace RacksStands.Module.UserManagement.Operations.Tenants.Create;
 
-namespace RacksStands.Module.UserManagement.Operations.Tenants.Create
-{
-    internal class TenantResponse
-    {
-    }
-}
+public record TenantResponse(
+    string TenantId,
+    string TenantName,
+    string TenantSlug);

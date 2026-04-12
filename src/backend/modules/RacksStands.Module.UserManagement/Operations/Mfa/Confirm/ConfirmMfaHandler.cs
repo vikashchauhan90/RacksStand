@@ -1,11 +1,9 @@
-using Microsoft.AspNetCore.DataProtection;
+
 using Microsoft.AspNetCore.Http;
+using RacksStands.Framework.Auth.Security;
 using RacksStands.Framework.Base.Hashers;
 using RacksStands.Framework.Base.IdGenerators;
-using System;
-using System.Collections.Generic;
 using System.Security.Claims;
-using System.Text;
 
 namespace RacksStands.Module.UserManagement.Operations.Mfa.Confirm;
 
@@ -13,7 +11,7 @@ namespace RacksStands.Module.UserManagement.Operations.Mfa.Confirm;
 internal sealed class ConfirmMfaHandler(
     UserManagementDbContext dbContext,
     IHttpContextAccessor httpContextAccessor,
-    IDataProtectionProvider dataProtection) : ICommandHandler<ConfirmMfaCommand, Outcome<ConfirmMfaResponse>>
+    IDataProtectionService dataProtection) : ICommandHandler<ConfirmMfaCommand, Outcome<ConfirmMfaResponse>>
 {
     public async Task<Outcome<ConfirmMfaResponse>> HandleAsync(ConfirmMfaCommand command, CancellationToken ct)
     {
@@ -24,7 +22,7 @@ internal sealed class ConfirmMfaHandler(
         if (!TotpHasher.Verify(command.TotpSecret!, command.TotpCode))
             return Outcome<ConfirmMfaResponse>.Problem(new OutcomeError("Mfa.InvalidCode", "Invalid TOTP code."));
 
-        // Encrypt and store secret
+        // Unprotect and store secret
         var encryptedSecret = dataProtection.Protect(command.TotpSecret!);
         var recoveryCodes = TotpHasher.GenerateRecoveryCodes(10, 8);
         var recoveryCodeHashes = recoveryCodes.Select(c => HashHelper.SHA256(c)).ToList();

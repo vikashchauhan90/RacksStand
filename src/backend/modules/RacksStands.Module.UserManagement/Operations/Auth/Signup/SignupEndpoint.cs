@@ -2,8 +2,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using ResultifyCore;
-using IResult = Microsoft.AspNetCore.Http.IResult;
 
 namespace RacksStands.Module.UserManagement.Operations.Auth.Signup;
 

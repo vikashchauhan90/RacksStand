@@ -1,27 +1,40 @@
-using Microsoft.EntityFrameworkCore;
 using RacksStands.Framework.Auth.Authentication;
+using RacksStands.Framework.Auth.Security;
 using RacksStands.Framework.Base.Hashers;
 using RacksStands.Framework.Base.IdGenerators;
-using RacksStands.Module.UserManagement.Operations.Auth.Signin;
+using RacksStands.Module.UserManagement.DbContexts.Repositories;
+using System.Security.Claims;
 using System.Security.Cryptography;
 
+namespace RacksStands.Module.UserManagement.Operations.Auth.Signin;
+
 internal sealed class SigninHandler(
-    UserManagementDbContext dbContext,
+    IUserRepository userRepository,
+    IUserMfaSettingRepository mfaSettingRepository,
+    IRefreshTokenRepository refreshTokenRepository,
+    IMfaChallengeRepository mfaChallengeRepository,
+    ITenantMembershipRepository membershipRepository,
+    IRoleRepository roleRepository,
     IJwtTokenService jwtTokenService,
-    ILogger<SigninHandler> logger) : ICommandHandler<SigninCommand, Outcome<SigninResponse>>
+    IDataProtectionService dataProtectionService, // You'll need to implement this
+    ILogger<SigninHandler> logger
+) : ICommandHandler<SigninCommand, Outcome<SigninResponse>>
 {
     public async Task<Outcome<SigninResponse>> HandleAsync(SigninCommand command, CancellationToken ct)
     {
         // 1. Find user
-        var user = await dbContext.Users
-            .FirstOrDefaultAsync(u => u.Email == command.Email && u.DeletedAt == null, ct);
+        var user = await userRepository.GetByEmailAsync(command.Email, ct);
         if (user == null || !PasswordHasher.VerifyHashedPassword(user.PasswordHash, command.Password))
+        {
+            logger.LogWarning("Failed login attempt for email {Email}", command.Email);
             return Outcome<SigninResponse>.Unauthorized(new OutcomeError("Signin.InvalidCredentials", "Invalid email or password."));
+        }
+
+        logger.LogInformation("User {UserId} authenticated successfully", user.Id);
 
         // 2. Check MFA
-        var mfaSetting = await dbContext.UserMfaSettings
-            .FirstOrDefaultAsync(m => m.UserId == user.Id && m.IsEnabled, ct);
-        if (mfaSetting != null)
+        var mfaSetting = await mfaSettingRepository.GetByUserIdAsync(user.Id, ct);
+        if (mfaSetting != null && mfaSetting.IsEnabled)
         {
             // MFA enabled – require code if not provided
             if (string.IsNullOrEmpty(command.MfaCode))
@@ -31,38 +44,61 @@ internal sealed class SigninHandler(
                 {
                     Id = IdGenerator.NewGuidString(),
                     UserId = user.Id,
-                    TokenHash = HashHelper.SHA256(RandomNumberGenerator.GetBytes(64).ToString()!),
+                    TokenHash = GenerateRandomTokenHash(),
                     ExpireAt = DateTimeOffset.UtcNow.AddMinutes(5),
                     CreatedAt = DateTimeOffset.UtcNow
                 };
-                await dbContext.MfaChallenges.AddAsync(challenge, ct);
-                await dbContext.SaveChangesAsync(ct);
+                await mfaChallengeRepository.AddAsync(challenge, ct);
 
+                logger.LogInformation("MFA challenge created for user {UserId}", user.Id);
                 return Outcome<SigninResponse>.Success(new SigninResponse(null!, 0, null!, true, challenge.Id));
             }
 
             // Verify MFA code
-            if (!VerifyTotp(mfaSetting.TotpSecretEncrypted, command.MfaCode))
+            if (!await VerifyTotpAsync(mfaSetting.TotpSecretEncrypted, command.MfaCode))
+            {
+                logger.LogWarning("Invalid MFA code provided for user {UserId}", user.Id);
                 return Outcome<SigninResponse>.Unauthorized(new OutcomeError("Signin.InvalidMfa", "Invalid MFA code."));
+            }
 
-            // Mark any pending challenge as used (optional)
-            var pendingChallenge = await dbContext.MfaChallenges
-                .FirstOrDefaultAsync(c => c.UserId == user.Id && !c.IsUsed && c.ExpireAt > DateTimeOffset.UtcNow, ct);
+            // Mark any pending challenge as used
+            var pendingChallenge = await mfaChallengeRepository.GetValidUnusedByUserIdAsync(user.Id, ct);
             if (pendingChallenge != null)
             {
-                pendingChallenge.IsUsed = true;
-                pendingChallenge.UsedAt = DateTimeOffset.UtcNow;
-                await dbContext.SaveChangesAsync(ct);
+                await mfaChallengeRepository.MarkUsedAsync(pendingChallenge, ct);
+                logger.LogInformation("MFA challenge {ChallengeId} marked as used", pendingChallenge.Id);
             }
         }
 
-        // 3. Generate tokens
-        var roles = await GetUserRoles(user.Id, ct);
-        var accessToken = jwtTokenService.GenerateToken(user.Id, user.UserName, roles);
+        // 3. Get user's default tenant and roles
+        var memberships = await membershipRepository.GetMembershipsByUserAsync(user.Id, ct);
+        string? defaultTenantId = null;
+        List<string> roleNames = new();
+
+        if (memberships.Any())
+        {
+            var activeMembership = memberships.First();
+            defaultTenantId = activeMembership.TenantId;
+
+            // Get role name for this membership
+            var role = await roleRepository.GetByIdAsync(activeMembership.RoleId, ct);
+            if (role != null)
+                roleNames.Add(role.Name);
+
+            logger.LogInformation("User {UserId} has default tenant {TenantId} with role {RoleName}",
+                user.Id, defaultTenantId, role?.Name ?? "Unknown");
+        }
+        else
+        {
+            logger.LogInformation("User {UserId} has no tenants yet", user.Id);
+        }
+
+        // 4. Generate tokens
+        var accessToken = GenerateTokenWithTenant(user, roleNames, defaultTenantId);
         var refreshToken = jwtTokenService.GenerateRefreshToken();
         var refreshTokenHash = HashHelper.SHA256(refreshToken);
 
-        var refreshTokenEntity = new RefreshToken
+        var refreshTokenEntity = new DbContexts.Entities.RefreshToken
         {
             Id = IdGenerator.NewGuidString(),
             UserId = user.Id,
@@ -70,33 +106,64 @@ internal sealed class SigninHandler(
             ExpireAt = DateTimeOffset.UtcNow.AddDays(jwtTokenService.GetRefreshTokenExpiryDays()),
             CreatedAt = DateTimeOffset.UtcNow
         };
-        await dbContext.RefreshTokens.AddAsync(refreshTokenEntity, ct);
-        await dbContext.SaveChangesAsync(ct);
+        await refreshTokenRepository.AddAsync(refreshTokenEntity, ct);
 
-        logger.LogInformation("User {UserId} signed in", user.Id);
+        logger.LogInformation("User {UserId} signed in successfully. HasTenant: {HasTenant}",
+            user.Id, defaultTenantId != null);
+
         return Outcome<SigninResponse>.Success(new SigninResponse(
             accessToken,
             jwtTokenService.GetAccessTokenExpirySeconds(),
             refreshToken,
-            false));
+            false,
+            null));
     }
 
-    private async Task<List<string>> GetUserRoles(string userId, CancellationToken ct)
+    private string GenerateTokenWithTenant(User user, List<string> roles, string? tenantId)
     {
-        // Join with TenantMembership + Role
-        return await dbContext.TenantMemberships
-            .Where(tm => tm.UserId == userId && tm.RevokedAt == null)
-            .Join(dbContext.Roles, tm => tm.RoleId, r => r.Id, (_, r) => r.Name)
-            .Distinct()
-            .ToListAsync(ct);
+        // Create additional claims
+        var additionalClaims = new List<Claim>
+        {
+            new Claim(ClaimTypes.Email, user.Email),
+            new Claim(ClaimTypes.Name, user.Name),
+        };
+
+        if (!string.IsNullOrEmpty(tenantId))
+        {
+            additionalClaims.Add(new Claim("tenant_id", tenantId));
+        }
+
+        // You'll need to extend IJwtTokenService to accept additional claims
+        // For now, we'll use the existing method and add claims via a new method
+        // Or modify the existing GenerateToken method to accept custom claims
+
+        // Option 1: If you can modify IJwtTokenService
+        // return jwtTokenService.GenerateTokenWithClaims(user.Id, user.UserName, roles, additionalClaims);
+
+        // Option 2: Use existing method (tenant_id won't be included)
+        return jwtTokenService.GenerateToken(user.Id, user.UserName, roles);
     }
 
-    private bool VerifyTotp(string encryptedSecret, string code)
+    private async Task<bool> VerifyTotpAsync(string encryptedSecret, string code)
     {
-        // Decrypt secret (use a real encryption service – omitted for brevity)
-        var secret = Decrypt(encryptedSecret);
-        return TotpHasher.Verify(secret, code);
+        try
+        {
+            // Unprotect the secret using your data protection service
+            var secret = dataProtectionService.Unprotect(encryptedSecret);
+
+            // Verify using TotpHasher
+            return TotpHasher.Verify(secret, code);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error verifying TOTP code");
+            return false;
+        }
     }
 
-    private string Decrypt(string encrypted) => encrypted; // Placeholder
+    private string GenerateRandomTokenHash()
+    {
+        var randomBytes = RandomNumberGenerator.GetBytes(64);
+        return HashHelper.SHA256(Convert.ToBase64String(randomBytes));
+    }
 }

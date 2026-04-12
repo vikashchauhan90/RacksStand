@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using RacksStands.Framework.Auth.Authentication;
-using IResult = Microsoft.AspNetCore.Http.IResult;
 
 namespace RacksStands.Module.UserManagement.Operations.Auth.Jwks;
 

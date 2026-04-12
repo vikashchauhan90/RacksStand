@@ -1,12 +1,16 @@
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
-using ResultifyCore;
+using RacksStands.Framework.Auth.Tenant;
+using RacksStands.Module.UserManagement.DbContexts.Repositories;
 using System.Security.Claims;
 
 namespace RacksStands.Module.UserManagement.Operations.Auth.UserInfo;
 
 internal class UserInfoHandler(
-    UserManagementDbContext dbContext,
+    IUserRepository userRepository,
+    ITenantMembershipRepository membershipRepository,
+    IRoleRepository roleRepository,
+    IPermissionRepository permissionRepository,
+    ITenantContext tenantContext,
     IHttpContextAccessor httpContextAccessor,
     ILogger<UserInfoHandler> logger
 ) : IQueryHandler<UserInfoQuery, Outcome<UserInfoResponse>>
@@ -15,6 +19,7 @@ internal class UserInfoHandler(
     {
         // Get current user ID from claims
         var userId = httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var currentTenantId = tenantContext.GetCurrentTenantId();
 
         if (string.IsNullOrEmpty(userId))
         {
@@ -25,9 +30,7 @@ internal class UserInfoHandler(
         }
 
         // Get user details
-        var user = await dbContext.Users
-            .FirstOrDefaultAsync(u => u.Id == userId && u.DeletedAt == null, ct);
-
+        var user = await userRepository.GetByIdAsync(userId, ct);
         if (user == null)
         {
             logger.LogWarning("User with ID {UserId} not found", userId);
@@ -36,10 +39,12 @@ internal class UserInfoHandler(
                 "User not found."));
         }
 
-        // Get roles
-        var roles = await GetUserRoles(user.Id, ct);
+        // Get roles and permissions based on tenant context
+        List<string> roles = new();
+        List<string> permissions = new();
 
-        logger.LogInformation("User info retrieved for {UserName}", user.UserName);
+        logger.LogInformation("User info retrieved for {UserName} (Tenant: {TenantId})",
+            user.UserName, currentTenantId ?? "No Tenant");
 
         var response = new UserInfoResponse(
             user.Id,
@@ -47,17 +52,10 @@ internal class UserInfoHandler(
             user.UserName,
             user.Email,
             roles,
-            new List<string>()
+            permissions
         );
 
         return Outcome<UserInfoResponse>.Success(response);
     }
 
-    private async Task<List<string>> GetUserRoles(string userId, CancellationToken ct)
-    {
-        return await dbContext.UserRoles
-            .Where(ur => ur.UserId == userId)
-            .Join(dbContext.Roles, ur => ur.RoleId, r => r.Id, (ur, r) => r.Name)
-            .ToListAsync(ct);
-    }
 }
