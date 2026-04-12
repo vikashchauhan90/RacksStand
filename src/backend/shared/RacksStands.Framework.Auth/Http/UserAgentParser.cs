@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using UAParser;
+using UAParser.Objects;
 
 namespace RacksStands.Framework.Auth.Http;
 
@@ -20,8 +21,8 @@ internal sealed class UserAgentParser : IUserAgentParser
     public string RawUserAgent
         => _httpContextAccessor.HttpContext?.Request.Headers.UserAgent.ToString() ?? string.Empty;
 
-    public bool IsMobile
-        => _cachedClientInfo.Value?.Device?.IsMobile() ?? false;
+    public string? Device
+        => _cachedClientInfo.Value?.Device.Family;
 
     public bool IsBot
     {
@@ -36,7 +37,7 @@ internal sealed class UserAgentParser : IUserAgentParser
     }
 
     public string? BrowserName
-        => _cachedClientInfo.Value?.UA?.Family;
+        => _cachedClientInfo.Value?.Browser?.Family;
 
     private ClientInfo? ParseUserAgent()
     {

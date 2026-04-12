@@ -4,7 +4,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" />
     <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" />
-    <PackageReference Include="UAParser" />
+    <PackageReference Include="UAParser.Core" />
   </ItemGroup>
 
 </Project>

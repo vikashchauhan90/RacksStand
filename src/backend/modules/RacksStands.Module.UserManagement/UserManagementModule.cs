@@ -1,8 +1,8 @@
-using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using RacksStands.Module.UserManagement.DbContexts.Repositories;
 
 
 namespace RacksStands.Module.UserManagement;
@@ -60,6 +60,20 @@ public class UserManagementModule : ModuleBase
                 sp.GetRequiredService<AuditEntityInterceptor>(),
                 sp.GetRequiredService<SecurityEntityInterceptor>());
         }, lifetime: ServiceLifetime.Scoped);
+
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IRoleRepository, RoleRepository>();
+        services.AddScoped<IPermissionRepository, PermissionRepository>();
+        services.AddScoped<ITenantRepository, TenantRepository>();
+        services.AddScoped<ITenantMembershipRepository, TenantMembershipRepository>();
+        services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+        services.AddScoped<IMagicLinkTokenRepository, MagicLinkTokenRepository>();
+        services.AddScoped<IMfaChallengeRepository, MfaChallengeRepository>();
+        services.AddScoped<IUserMfaSettingRepository, UserMfaSettingRepository>();
+        services.AddScoped<IM2MClientRepository, M2MClientRepository>();
+        services.AddScoped<IProductRepository, ProductRepository>();
+        services.AddScoped<ITenantInvitationRepository, TenantInvitationRepository>();
+        services.AddScoped<ITenantSubscriptionRepository, TenantSubscriptionRepository>();
 
     }
 }
