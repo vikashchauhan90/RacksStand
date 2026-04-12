@@ -6,7 +6,6 @@ namespace RacksStands.Module.UserManagement.Operations.Auth.Signin;
 
 internal class SigninHandler(
     UserManagementDbContext dbContext,
-    IJwtTokenService jwtTokenService,
     ILogger<SigninHandler> logger
 ) : ICommandHandler<SigninCommand, Outcome<SigninResponse>>
 {
@@ -40,18 +39,18 @@ internal class SigninHandler(
         var permissions = await GetUserPermissions(user.Id, ct);
 
         // Generate tokens
-        var accessToken = jwtTokenService.GenerateToken(user.Id, user.UserName, roles);
-        var refreshToken = jwtTokenService.GenerateRefreshToken();
+        //var accessToken = jwtTokenService.GenerateToken(user.Id, user.UserName, roles);
+        //var refreshToken = jwtTokenService.GenerateRefreshToken();
 
-        // Revoke existing refresh tokens (optional - security)
-        var existingTokens = await dbContext.RefreshTokens
-            .Where(rt => rt.UserId == user.Id && !rt.IsRevoked && rt.ExpireAt > DateTime.UtcNow)
-            .ToListAsync(ct);
+        //// Revoke existing refresh tokens (optional - security)
+        //var existingTokens = await dbContext.RefreshTokens
+        //    .Where(rt => rt.UserId == user.Id && !rt.IsRevoked && rt.ExpireAt > DateTime.UtcNow)
+        //    .ToListAsync(ct);
 
-        foreach (var token in existingTokens)
-        {
-            token.IsRevoked = true;
-        }
+        //foreach (var token in existingTokens)
+        //{
+        //    token.IsRevoked = true;
+        //}
 
         // Store new refresh token
         //var refreshTokenEntity = new RefreshToken
@@ -67,14 +66,14 @@ internal class SigninHandler(
 
         logger.LogInformation("User {UserName} signed in successfully", user.UserName);
 
-        var response = new SigninResponse(
-            accessToken,
-            refreshToken,
-            jwtTokenService.GetAccessTokenExpirySeconds(),
-            "Bearer"
-        );
+        //var response = new SigninResponse(
+        //    accessToken,
+        //    refreshToken,
+        //    jwtTokenService.GetAccessTokenExpirySeconds(),
+        //    "Bearer"
+        //);
 
-        return Outcome<SigninResponse>.Success(response);
+        return Outcome<SigninResponse>.Success(null);
     }
 
     private async Task<List<string>> GetUserRoles(string userId, CancellationToken ct)

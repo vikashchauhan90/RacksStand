@@ -79,10 +79,10 @@
     <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.0" />
     <PackageVersion Include="coverlet.collector" Version="8.0.0" />
     <!-- Result pattern -->
-    <PackageVersion Include="ResultifyCore" Version="10.0.0" />
+    <PackageVersion Include="ResultifyCore" Version="10.0.1.0" />
     <!-- CQRS pattern -->
-    <PackageVersion Include="MediatorForge" Version="10.0.1" />
+    <PackageVersion Include="MediatorForge" Version="10.0.1.1" />
      <!-- Hal pattern -->
-    <PackageVersion Include="Hal.Core" Version="10.0.0" />
+    <PackageVersion Include="Hal.Core" Version="10.0.0.0" />
   </ItemGroup>
 </Project>

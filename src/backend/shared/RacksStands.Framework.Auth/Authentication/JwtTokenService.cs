@@ -1,13 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace RacksStands.Framework.Auth.Authentication;
-
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
-using System.Text;
 using Microsoft.IdentityModel.Tokens;
 
 namespace RacksStands.Framework.Auth.Authentication;
@@ -15,7 +8,7 @@ namespace RacksStands.Framework.Auth.Authentication;
 /// <summary>
 /// JWT Token Service implementation
 /// </summary>
-public class JwtTokenService
+public class JwtTokenService : IJwtTokenService
 {
     private readonly JwtOptions _options;
     private readonly ISigningKeyFactory _keyFactory;
@@ -65,7 +58,7 @@ public class JwtTokenService
 
     public SecurityKey GetSecurityKey()
     {
-        return _keyFactory.GetSecurityKey();
+        return _keyFactory.GetValidationKeys().First();
     }
 
     public SigningCredentials GetSigningCredentials()
@@ -100,14 +93,14 @@ public class JwtTokenService
                 ValidAudience = _options.Audience,
                 ValidateLifetime = validateLifetime,
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = _keyFactory.GetJsonWebKeySet(),
+                IssuerSigningKeys = _keyFactory.GetValidationKeys(),
                 ClockSkew = TimeSpan.Zero
             };
 
             var principal = _tokenHandler.ValidateToken(token, validationParameters, out _);
             return principal;
         }
-        catch
+        catch (Exception ex)
         {
             return null;
         }

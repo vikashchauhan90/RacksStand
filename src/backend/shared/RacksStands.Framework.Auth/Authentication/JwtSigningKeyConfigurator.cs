@@ -23,6 +23,7 @@ internal sealed class JwtSigningKeyConfigurator(IServiceProvider serviceProvider
         options.TokenValidationParameters.ValidAudience = jwtOptions.Audience;
         options.TokenValidationParameters.IssuerSigningKeys =
             factory.GetValidationKeys();
+        options.TokenValidationParameters.ClockSkew = TimeSpan.Zero;
 
     }
 }

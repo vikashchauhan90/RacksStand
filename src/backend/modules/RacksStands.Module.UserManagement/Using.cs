@@ -9,3 +9,4 @@ global using MediatorForge.Abstractions;
 global using RacksStands.Framework.Modules.Bootstrap.Abstractions;
 global using Microsoft.Extensions.Logging;
 global using RacksStands.Framework.Modules.Bootstrap;
+global using ResultifyCore;

@@ -18,6 +18,7 @@ public static class JwtAuthenticationExtensions
             .ValidateOnStart();
 
         services.TryAddSingleton<ISigningKeyFactory, SigningKeyFactory>();
+        services.TryAddSingleton<IJwtTokenService, JwtTokenService>();
         services.TryAddSingleton<IPostConfigureOptions<JwtBearerOptions>, JwtSigningKeyConfigurator>();
 
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
