@@ -32,6 +32,7 @@ public static class JwtAuthenticationExtensions
         services.TryAddScoped<ICookieAccessor, CookieAccessor>();
         services.TryAddScoped<IRequestCorrelationService, RequestCorrelationService>();
         services.TryAddScoped<IDataProtectionService, DataProtectionService>();
+        services.TryAddScoped<IXssProtectionService, XssProtectionService>();
 
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
