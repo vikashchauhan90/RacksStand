@@ -17,7 +17,7 @@ internal class RefreshTokenHandler(
 
         // Find valid refresh token
         var refreshToken = await dbContext.RefreshTokens
-            .Include(rt => rt.User)
+            .Include(rt => dbContext.Users)
             .FirstOrDefaultAsync(rt => rt.TokenHash == command.RefreshToken &&
                                        !rt.IsRevoked &&
                                        rt.ExpireAt > DateTime.UtcNow, ct);

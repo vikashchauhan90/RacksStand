@@ -29,14 +29,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Operations\Mfa\Confirm\" />
-    <Folder Include="Operations\Mfa\Delete\" />
     <Folder Include="Operations\Mfa\Regenerate\" />
-    <Folder Include="Operations\Mfa\Status\" />
-    <Folder Include="Operations\Mfa\Verify\" />
-    <Folder Include="Operations\Invitations\Accept\" />
     <Folder Include="Operations\Invitations\Decline\" />
-    <Folder Include="Operations\Invitations\Generate\" />
+    <Folder Include="Operations\Products\" />
     <Folder Include="Operations\Users\List\" />
     <Folder Include="Operations\Users\Get\" />
     <Folder Include="Operations\Users\Delete\" />

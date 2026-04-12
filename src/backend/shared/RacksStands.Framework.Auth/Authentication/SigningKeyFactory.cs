@@ -4,7 +4,7 @@ using System.Text;
 
 namespace RacksStands.Framework.Auth.Authentication;
 
-public sealed class SigningKeyFactory : ISigningKeyFactory, IDisposable
+internal sealed class SigningKeyFactory : ISigningKeyFactory, IDisposable
 {
     private readonly JwtOptions _options;
     private readonly SigningKey _currentKey;

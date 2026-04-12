@@ -1,6 +1,6 @@
 using Hal.Core;
-using RacksStands.Framework.Base.Exceptions;
 using RacksStands.Framework.Base.Serializers;
+using ResultifyCore.Exceptions;
 using System.Diagnostics;
 
 namespace RacksStands.ApiHost.Middlewares;
@@ -68,7 +68,7 @@ public class GlobalExceptionHandlerMiddleware(RequestDelegate next, ILogger<Glob
 
         return exception switch
         {
-            RacksStandsBaseException ex =>
+            ResultifyBaseException ex =>
             (
                 ex.StatusCode,
                 new ApiResponse

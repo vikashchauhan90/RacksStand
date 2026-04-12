@@ -8,7 +8,7 @@ namespace RacksStands.Framework.Auth.Authentication;
 /// <summary>
 /// JWT Token Service implementation
 /// </summary>
-public class JwtTokenService : IJwtTokenService
+internal class JwtTokenService : IJwtTokenService
 {
     private readonly JwtOptions _options;
     private readonly ISigningKeyFactory _keyFactory;

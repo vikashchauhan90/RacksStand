@@ -12,5 +12,7 @@ internal class SigninValidator : AbstractValidator<SigninCommand>
 
         RuleFor(x => x.Password)
             .NotEmpty().WithMessage("Password is required");
+
+        RuleFor(x => x.MfaCode).Length(6).When(x => !string.IsNullOrEmpty(x.MfaCode));
     }
 }

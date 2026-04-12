@@ -5,7 +5,7 @@ namespace RacksStands.Framework.Base.Hashers;
 
 public static class PasswordHasher
 {
-    private const int _iterCount = 100_000;
+    private const int _iterCount = 600_000;
     private readonly static RandomNumberGenerator _rng = RandomNumberGenerator.Create();
 
     public static string HashPassword(string password)
